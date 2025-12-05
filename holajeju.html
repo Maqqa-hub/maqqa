@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAQQA - Menú Peruano</title>
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        :root { 
+            --primary: #008f5d; 
+            --primary-dark: #006e47;
+            --banner-green: #00a650;
+            --text-dark: #1a2e35;
+            --text-grey: #68767c;
+            --bg-light: #f9fbfa;
+            --accent-purple: #f3e5f5; /* Fondo vitaminas */
+            --text-purple: #8e24aa;   /* Texto vitaminas */
+        }
+        
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-light); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; color: var(--text-dark); }
+        .hidden { display: none !important; }
+        button { cursor: pointer; transition: transform 0.1s; border:none; }
+        button:active { transform: scale(0.98); }
+        a { color: var(--primary); text-decoration: none; font-weight: bold; cursor: pointer; }
+
+        /* --- NAVBAR --- */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 5%; background: white; border-bottom: 1px solid #eee; position: fixed; top: 0; width: 100%; z-index: 100; height: 70px; box-sizing: border-box; }
+        
+        .logo { display: flex; align-items: center; gap: 10px; color: var(--primary); font-weight: 800; font-size: 1.5rem; text-decoration: none; }
+        .logo img { height: 45px; width: auto; } /* Ajuste del logo en el navbar */
+        
+        .nav-icons { display: flex; gap: 20px; align-items: center; font-size: 1.2rem; }
+        .cart-container { position: relative; cursor: pointer; }
+        .cart-badge { position: absolute; top: -5px; right: -8px; background-color: var(--primary); color: white; font-size: 0.7rem; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+
+        #main-content { margin-top: 70px; flex: 1; }
+
+        /* --- PANTALLA DE INICIO --- */
+        .hero-section { background: linear-gradient(180deg, #e8f8f5 0%, #f4fdfb 100%); padding: 60px 5% 80px 5%; text-align: center; display: flex; flex-direction: column; align-items: center; }
+        
+        .hero-logo-img { width: 150px; height: auto; margin-bottom: 15px; } /* Ajuste del logo grande en Hero */
+        
+        .hero-title { color: #144d3b; font-size: 3.5rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
+        .hero-subtitle { color: var(--text-grey); font-size: 1.1rem; margin-top: 10px; margin-bottom: 50px; font-weight: 500; }
+        .features-container { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; max-width: 1000px; width: 100%; margin-bottom: 50px; }
+        .feature-card { background: white; padding: 30px 25px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,143,93,0.05); flex: 1; min-width: 240px; max-width: 300px; text-align: left; display: flex; flex-direction: column; gap: 15px; }
+        .f-icon { width: 32px; height: 32px; margin-bottom: 5px; }
+        .icon-leaf { color: #00b894; } .icon-heart { color: #ff4757; } .icon-gym { color: #54a0ff; }
+        .f-title { font-weight: 700; font-size: 1.1rem; margin: 0; }
+        .f-desc { color: #8898a1; font-size: 0.9rem; margin: 0; line-height: 1.5; }
+        .cta-button { background-color: var(--primary); color: white; padding: 15px 40px; border-radius: 50px; font-size: 1rem; font-weight: 700; box-shadow: 0 5px 15px rgba(0,143,93,0.3); display: inline-flex; align-items: center; gap: 10px; }
+
+        /* --- SECCIONES INTERNAS --- */
+        .content-container { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
+
+        /* Banner Recomendaciones */
+        .banner-rec { background-color: var(--banner-green); color: white; padding: 40px; border-radius: 25px; margin-bottom: 50px; box-shadow: 0 10px 30px rgba(0, 166, 80, 0.2); scroll-margin-top: 90px; }
+        .rec-header h2 { font-size: 2rem; margin: 0 0 10px 0; display: flex; align-items: center; gap: 10px; }
+        .section-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; color: #fff; }
+        .rec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+
+        /* Menú General */
+        .menu-title { color: #006847; margin-bottom: 5px; font-size: 2rem; font-weight: 800; }
+        .menu-subtitle { color: #666; margin-bottom: 25px; font-size: 1rem; }
+        .filters-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+        .filter-btn { background: white; border: 1px solid #ddd; padding: 8px 25px; border-radius: 20px; color: #555; font-weight: 600; transition: all 0.2s; }
+        .filter-btn.active { background-color: var(--primary); border-color: var(--primary); color: white; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+
+        /* Tarjetas */
+        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.03); cursor: pointer; position: relative; transition: transform 0.2s; border: 1px solid #f0f0f0; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+        .card-img-container { width: 100%; height: 220px; position: relative; }
+        .card img { width: 100%; height: 100%; object-fit: cover; }
+        .badge { position: absolute; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.95); padding: 6px 14px; border-radius: 30px; font-size: 0.8rem; font-weight: 700; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px; }
+        .badge.vegano { color: var(--primary); } .badge.balanceado { color: #8e44ad; } .badge.vegetariano { color: #e67e22; }
+        .card-content { padding: 20px; }
+        .card h3 { margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 700; }
+        .card-price { color: var(--primary); font-weight: 800; font-size: 1.2rem; }
+
+        /* --- LOGIN --- */
+        #auth-view { position: fixed; top:0; left:0; width:100%; height:100%; display: flex; justify-content: center; align-items: center; background-color: #e8f8f5; z-index: 200; overflow-y: auto; }
+        .auth-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; margin: 20px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .auth-btn { background: var(--primary); color: white; padding: 14px; border-radius: 30px; font-weight: bold; width: 100%; margin-top: 10px; }
+        .row { display: flex; gap: 10px; } .col { flex: 1; }
+
+        /* --- MODAL DETALLE --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; width: 90%; max-width: 600px; border-radius: 20px; overflow: hidden; max-height: 90vh; overflow-y: auto; }
+        .modal-body { padding: 30px; }
+        
+        .macros-grid { display: flex; gap: 15px; margin: 20px 0; }
+        .macro-box { flex: 1; padding: 15px; text-align: center; border-radius: 12px; }
+        .bg-green-light { background: #e8f5e9; color: var(--primary-dark); }
+        .bg-blue-light { background: #e3f2fd; color: #1565c0; }
+        .bg-yellow-light { background: #fffde7; color: #f9a825; }
+        .bg-red-light { background: #ffebee; color: #c62828; }
+        
+        .macro-val { font-size: 1.2rem; font-weight: bold; display: block; margin-top: 5px; }
+        .macro-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .vitamins-section { margin: 20px 0 30px 0; }
+        .vitamins-title { font-weight: bold; margin-bottom: 10px; display: block; }
+        .vitamin-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+        .vit-tag { background-color: var(--accent-purple); color: var(--text-purple); padding: 6px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; }
+
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 20px; }
+        .add-cart-btn { background: var(--primary); color: white; padding: 12px 30px; border-radius: 8px; font-weight: bold; display: flex; align-items: center; gap: 10px; font-size: 1rem; }
+
+        /* --- VISTA CARRITO --- */
+        .cart-layout { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
+        .cart-list { flex: 2; min-width: 300px; }
+        .cart-summary { flex: 1; min-width: 280px; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        
+        .cart-item { background: white; border-radius: 12px; padding: 15px; display: flex; gap: 20px; align-items: center; margin-bottom: 15px; border: 1px solid #eee; }
+        .cart-item img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; }
+        .cart-item-details { flex: 1; }
+        .cart-item-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
+        .cart-item-price { color: var(--primary); font-weight: bold; }
+        .qty-controls { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+        .qty-btn { width: 30px; height: 30px; background: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #666; }
+        .remove-btn { color: #ff5252; cursor: pointer; margin-left: 15px; }
+
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 15px; color: #666; }
+        .summary-total { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-weight: bold; font-size: 1.2rem; color: var(--text-dark); }
+        .checkout-btn { background: var(--primary); color: white; width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; margin-top: 20px; }
+
+    </style>
+</head>
+<body>
+
+    <div id="auth-view">
+        <div id="form-login" class="auth-card">
+            <img src="logo_nuevo_empresa_pi3-removebg-preview.png" alt="MAQQA Logo" style="width: 80px; margin-bottom: 10px;">
+            <h1 style="color:var(--primary); margin: 0 0 5px 0;">MAQQA</h1>
+            
+            <p>Inicia sesión para ver tu plan</p>
+            <div class="input-group"><label>Correo</label><input type="email" id="login-email" value="fernando@mail.com"></div>
+            <div class="input-group"><label>Contraseña</label><input type="password" value="123456"></div>
+            <button class="auth-btn" onclick="login()">Iniciar Sesión</button>
+            <p style="font-size:0.9rem; margin-top:15px;">¿No tienes cuenta? <a onclick="showRegister()">Regístrate aquí</a></p>
+        </div>
+        <div id="form-register" class="auth-card hidden">
+            <img src="logo_nuevo_empresa_pi3-removebg-preview.png" alt="MAQQA Logo" style="width: 80px; margin-bottom: 10px;">
+            <h1 style="color:var(--primary); margin: 0 0 5px 0;">Crear Cuenta</h1>
+            
+            <div class="input-group"><label>Nombre</label><input type="text" id="reg-name" placeholder="Ej: Fernando"></div>
+            <div class="input-group"><label>Correo</label><input type="email" id="reg-email"></div>
+            <div class="row"><div class="col input-group"><label>Altura (cm)</label><input type="number" id="reg-height" placeholder="175"></div><div class="col input-group"><label>Peso (kg)</label><input type="number" id="reg-weight" placeholder="70"></div></div>
+            <button class="auth-btn" onclick="register()">Registrarme</button>
+            <p style="font-size:0.9rem; margin-top:15px;">¿Ya tienes cuenta? <a onclick="showLogin()">Inicia sesión</a></p>
+        </div>
+    </div>
+
+    <div id="app-view" class="hidden">
+        <nav>
+            <div class="logo">
+                <img src="logo_nuevo_empresa_pi3-removebg-preview.png" alt="MAQQA Logo">
+                MAQQA
+            </div>
+            <div class="nav-icons">
+                <span onclick="goHome()" style="font-size:0.9rem; font-weight:bold; color:#666; margin-right:10px; cursor:pointer;">Menú</span>
+                <div class="cart-container" onclick="showCart()">
+                    🛒 <span id="cart-count" class="cart-badge">0</span>
+                </div>
+                <span onclick="logout()" style="cursor:pointer;">Salir</span>
+            </div>
+        </nav>
+
+        <div id="main-content">
+            
+            <div id="view-home">
+                <div class="hero-section">
+                    <img src="logo_nuevo_empresa_pi3-removebg-preview.png" alt="MAQQA Logo" class="hero-logo-img">
+                    
+                    <h1 class="hero-title">MAQQA</h1>
+                    <p class="hero-subtitle">Tu plataforma de delivery para comida saludable</p>
+                    <div class="features-container">
+                        <div class="feature-card"><svg class="f-icon icon-leaf" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg><h3 class="f-title">100% Saludable</h3><p class="f-desc">Platos vegetarianos, veganos y balanceados.</p></div>
+                        <div class="feature-card"><svg class="f-icon icon-heart" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><h3 class="f-title">Información Nutricional</h3><p class="f-desc">Control total de lo que consumes.</p></div>
+                        <div class="feature-card"><svg class="f-icon icon-gym" viewBox="0 0 24 24" fill="currentColor"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22 14.86 20.57 16.29 22 18.43 19.86 19.86 21.29 21.29 19.86l-1.43-1.43 1.43-1.43-1.43-1.43z"/></svg><h3 class="f-title">Para tu Estilo</h3><p class="f-desc">Ideal para fitness y bienestar.</p></div>
+                    </div>
+                    <button class="cta-button" onclick="scrollToRec()">Comenzar Ahora <span>&rarr;</span></button>
+                </div>
+
+                <div class="content-container">
+                    <div id="rec-section" class="banner-rec">
+                        <div class="rec-header"><h2>✨ Recomendaciones para ti, <span id="user-name-display">Usuario</span></h2><p id="user-imc-display">Calculando...</p></div>
+                        <div class="section-title"><span>🏋️</span> Para ganar masa muscular</div>
+                        <p class="section-desc">Altos en proteínas, ideales para entrenar.</p>
+                        <div id="rec-container" class="rec-grid"></div>
+                    </div>
+
+                    <h2 class="menu-title">Nuestro Menú</h2>
+                    <p class="menu-subtitle">Platillos saludables y deliciosos</p>
+                    <div class="filters-row">
+                        <button class="filter-btn active" onclick="filterItems('todo', this)">Todo</button>
+                        <button class="filter-btn" onclick="filterItems('vegano', this)">Vegano</button>
+                        <button class="filter-btn" onclick="filterItems('vegetariano', this)">Vegetariano</button>
+                        <button class="filter-btn" onclick="filterItems('balanceado', this)">Balanceado</button>
+                    </div>
+                    <div id="menu-container" class="menu-grid"></div>
+                </div>
+            </div>
+
+            <div id="view-cart" class="content-container hidden">
+                <h1 style="color:var(--primary); margin-bottom:5px;">Tu Carrito</h1>
+                <p id="cart-subtitle" style="margin-bottom:30px; color:#666;">0 productos</p>
+                
+                <div class="cart-layout">
+                    <div id="cart-list" class="cart-list">
+                        </div>
+
+                    <div class="cart-summary">
+                        <h3 style="margin-top:0;">Resumen</h3>
+                        <div class="summary-row"><span>Subtotal</span><span id="cart-subtotal">S/ 0.00</span></div>
+                        <div class="summary-row"><span>Delivery</span><span style="color:var(--primary); font-weight:bold;">Gratis</span></div>
+                        <div class="summary-total"><span>Total</span><span id="cart-total" style="color:var(--primary);">S/ 0.00</span></div>
+                        <button class="checkout-btn" onclick="alert('¡Pedido Realizado con Éxito! 🛵')">Realizar Pedido</button>
+                        <p style="font-size:0.8rem; color:#999; text-align:center; margin-top:10px;">Delivery gratis en todo Lima</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="productModal" class="modal-overlay hidden" onclick="closeModal(event)">
+        <div class="modal-content">
+            <img id="m-img" src="" style="width:100%; height:250px; object-fit:cover;">
+            <div class="modal-body">
+                <h2 id="m-title" style="color:#004d40; font-size:1.8rem; margin:0 0 5px 0;"></h2>
+                <p id="m-desc" style="color:#666; margin-bottom:20px;"></p>
+                
+                <div class="macros-grid">
+                    <div class="macro-box bg-green-light"><span class="macro-label">Calorías</span><span id="m-cal" class="macro-val"></span></div>
+                    <div class="macro-box bg-blue-light"><span class="macro-label">Proteínas</span><span id="m-prot" class="macro-val"></span></div>
+                    <div class="macro-box bg-yellow-light"><span class="macro-label">Carbs</span><span id="m-carbs" class="macro-val"></span></div>
+                    <div class="macro-box bg-red-light"><span class="macro-label">Grasas</span><span id="m-fats" class="macro-val"></span></div>
+                </div>
+
+                <div class="vitamins-section">
+                    <span class="vitamins-title">Vitaminas y Minerales:</span>
+                    <div id="m-vitamins" class="vitamin-tags"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <span id="m-price" style="font-size:2rem; font-weight:bold; color:var(--primary);"></span>
+                    <button class="add-cart-btn" onclick="addToCartCurrent()">
+                        🛒 Agregar al Carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ESTADO GLOBAL ---
+        let currentUser = null;
+        let cart = []; // Array de {id, qty}
+        let currentModalProductId = null;
+
+        // --- BASE DE DATOS ---
+        const products = [
+            { 
+                id: 1, name: "Seco de Res con Quinua", category: "balanceado", price: 32.00, 
+                desc: "Guiso de res al culantro acompañado de quinua graneada.", 
+                img: "seco de res con quinoa.jpg", 
+                cal: "550 kcal", prot: "40g", carbs: "45g", fats: "18g", 
+                vitamins: ["Hierro", "Zinc", "Vitamina B12", "Magnesio"] 
+            },
+            { 
+                id: 2, name: "Pollo a la Plancha con Verduras", category: "balanceado", price: 29.00, 
+                desc: "Pechuga grillada con mix de verduras salteadas.", 
+                img: "Pollo con verduras.jpg", 
+                cal: "320 kcal", prot: "35g", carbs: "10g", fats: "8g",
+                vitamins: ["Vitamina B6", "Potasio", "Niacina"]
+            },
+            { 
+                id: 3, name: "Pavo con Camote", category: "balanceado", price: 34.00, 
+                desc: "Medallones de pavo al horno con puré de camote rústico.", 
+                img: "Pavo con camote.jpg", 
+                cal: "410 kcal", prot: "38g", carbs: "40g", fats: "10g",
+                vitamins: ["Vitamina A", "Selenio", "Fósforo"]
+            },
+            { 
+                id: 4, name: "Lomo Saltado Clásico", category: "balanceado", price: 35.00, 
+                desc: "Tradicional lomo fino al wok con papas doradas.", 
+                img: "lomo saltado.jpg", 
+                cal: "500 kcal", prot: "35g", carbs: "45g", fats: "20g",
+                vitamins: ["Hierro", "Zinc", "Potasio"]
+            },
+            { 
+                id: 5, name: "Sudado de Pescado", category: "balanceado", price: 30.00, 
+                desc: "Pescado del día cocido al vapor con tomates y cebollas.", 
+                img: "sudado de pescado.jpg", 
+                cal: "380 kcal", prot: "35g", carbs: "30g", fats: "10g",
+                vitamins: ["Omega 3", "Vitamina D", "Fósforo"]
+            },
+            { 
+                id: 6, name: "Tallarín Verde", category: "vegetariano", price: 26.00, 
+                desc: "Salsa pesto con queso fresco y nueces.", 
+                img: "tallarin verde.jpg", 
+                cal: "520 kcal", prot: "14g", carbs: "65g", fats: "22g",
+                vitamins: ["Calcio", "Vitamina K", "Hierro"]
+            },
+            { 
+                id: 7, name: "Papa a la Huancaína", category: "vegetariano", price: 20.00, 
+                desc: "Papas nativas en crema de ají amarillo y queso.", 
+                img: "papa a la huancaina.jpg", 
+                cal: "380 kcal", prot: "10g", carbs: "50g", fats: "16g",
+                vitamins: ["Vitamina C", "Calcio", "Potasio"]
+            },
+            { 
+                id: 8, name: "Locro de Zapallo", category: "vegetariano", price: 24.00, 
+                desc: "Guiso de zapallo con queso y choclo.", 
+                img: "locro de zapallo.jpg", 
+                cal: "340 kcal", prot: "12g", carbs: "40g", fats: "15g",
+                vitamins: ["Vitamina A", "Fibra", "Calcio"]
+            },
+            { 
+                id: 9, name: "Causa Vegetariana", category: "vegetariano", price: 22.00, 
+                desc: "Rellena de verduras frescas y palta.", 
+                img: "causa vegetariana.jpg", 
+                cal: "290 kcal", prot: "12g", carbs: "30g", fats: "14g",
+                vitamins: ["Vitamina C", "Potasio", "Vitamina E"]
+            },
+            { 
+                id: 10, name: "Ají de Gallina de Champiñones", category: "vegano", price: 26.00, 
+                desc: "Reinvención vegana con setas y nueces.", 
+                img: "aji de gallina de champiñones.jpg", 
+                cal: "380 kcal", prot: "14g", carbs: "45g", fats: "12g",
+                vitamins: ["Vitamina D", "Zinc", "Selenio"]
+            },
+            { 
+                id: 11, name: "Lomo Saltado de Champiñones", category: "vegano", price: 28.00, 
+                desc: "Saltado vegano al wok con champiñones.", 
+                img: "lomo saltado de champiñones.jpg", 
+                cal: "350 kcal", prot: "12g", carbs: "50g", fats: "8g",
+                vitamins: ["Potasio", "Vitamina B", "Fibra"]
+            },
+            { 
+                id: 12, name: "Ceviche de Champiñones", category: "vegano", price: 24.00, 
+                desc: "Fresco y cítrico, leche de tigre vegana.", 
+                img: "ceviche de champiñones.jpg", 
+                cal: "250 kcal", prot: "8g", carbs: "35g", fats: "2g",
+                vitamins: ["Vitamina C", "Potasio", "Cobre"]
+            }
+        ];
+
+        // --- LÓGICA DE USUARIO Y NAVEGACIÓN ---
+        function showRegister() { document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.remove('hidden'); }
+        function showLogin() { document.getElementById('form-register').classList.add('hidden'); document.getElementById('form-login').classList.remove('hidden'); }
+        
+        function register() {
+            const name = document.getElementById('reg-name').value;
+            const h = parseFloat(document.getElementById('reg-height').value);
+            const w = parseFloat(document.getElementById('reg-weight').value);
+            if (name && h && w) { currentUser = { name, h, w }; enterApp(); } else alert("Completa los datos");
+        }
+
+        function login() {
+            const email = document.getElementById('login-email').value;
+            if(!currentUser) {
+                if(email.includes('fernando')) currentUser = { name: "Fernando", h: 175, w: 56.7 };
+                else currentUser = { name: "Invitado", h: 170, w: 70 };
+            }
+            enterApp();
+        }
+
+        function enterApp() {
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
+            updateUserHeader();
+            goHome();
+        }
+
+        function updateUserHeader() {
+            document.getElementById('user-name-display').innerText = currentUser.name;
+            let hm = currentUser.h/100;
+            let imc = (currentUser.w/(hm*hm)).toFixed(1);
+            let s = imc<18.5?"Bajo peso":imc<25?"Peso normal":imc<30?"Sobrepeso":"Obesidad";
+            document.getElementById('user-imc-display').innerHTML = `Tu IMC es de <strong>${imc} (${s})</strong>.`;
+        }
+
+        function goHome() {
+            document.getElementById('view-home').classList.remove('hidden');
+            document.getElementById('view-cart').classList.add('hidden');
+            renderRecommendations();
+            renderMenu('todo');
+        }
+
+        function scrollToRec() { document.getElementById('rec-section').scrollIntoView({behavior:'smooth'}); }
+        function logout() { location.reload(); }
+
+        // --- RENDERIZADO DE PLATOS ---
+        function createCard(p) {
+            let icon = p.category==='vegano'?'🍃': p.category==='vegetariano'?'🧀':'♡';
+            let fallback = "https://via.placeholder.com/400?text="+encodeURIComponent(p.name);
+            return `
+            <div class="card" onclick="openModal(${p.id})">
+                <div class="card-img-container">
+                    <div class="badge ${p.category}">${icon} ${p.category.charAt(0).toUpperCase()+p.category.slice(1)}</div>
+                    <img src="${p.img}" onerror="this.src='${fallback}'">
+                </div>
+                <div class="card-content">
+                    <h3>${p.name}</h3>
+                    <div style="color:#666; font-size:0.9rem; margin-bottom:10px;">${p.desc}</div>
+                    <div class="card-price">S/ ${p.price.toFixed(2)}</div>
+                </div>
+            </div>`;
+        }
+
+        function renderRecommendations() {
+            const container = document.getElementById('rec-container');
+            container.innerHTML = products.filter(p => [1,2,3].includes(p.id)).map(createCard).join('');
+        }
+
+        function renderMenu(filter) {
+            const container = document.getElementById('menu-container');
+            const filtered = filter==='todo' ? products : products.filter(p => p.category===filter);
+            container.innerHTML = filtered.map(createCard).join('');
+        }
+
+        function filterItems(cat, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderMenu(cat);
+        }
+
+        // --- MODAL Y CARRITO ---
+        function openModal(id) {
+            currentModalProductId = id;
+            const p = products.find(x => x.id === id);
+            document.getElementById('m-title').innerText = p.name;
+            document.getElementById('m-desc').innerText = p.desc;
+            document.getElementById('m-price').innerText = "S/ " + p.price.toFixed(2);
+            
+            // Macros
+            document.getElementById('m-cal').innerText = p.cal;
+            document.getElementById('m-prot').innerText = p.prot;
+            document.getElementById('m-carbs').innerText = p.carbs;
+            document.getElementById('m-fats').innerText = p.fats;
+
+            // Vitaminas
+            const vitContainer = document.getElementById('m-vitamins');
+            vitContainer.innerHTML = p.vitamins.map(v => `<span class="vit-tag">${v}</span>`).join('');
+
+            // Imagen
+            let img = document.getElementById('m-img');
+            img.src = p.img;
+            img.onerror = () => img.src = "https://via.placeholder.com/400";
+
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function closeModal(e) {
+            if(e.target.id === 'productModal' || e.target.tagName === 'BUTTON' && !e.target.classList.contains('add-cart-btn')) 
+                document.getElementById('productModal').classList.add('hidden');
+        }
+
+        function addToCartCurrent() {
+            const existing = cart.find(i => i.id === currentModalProductId);
+            if(existing) existing.qty++;
+            else cart.push({ id: currentModalProductId, qty: 1 });
+            
+            updateCartCount();
+            document.getElementById('productModal').classList.add('hidden');
+            alert("✅ Agregado al carrito");
+        }
+
+        function updateCartCount() {
+            const total = cart.reduce((acc, item) => acc + item.qty, 0);
+            document.getElementById('cart-count').innerText = total;
+        }
+
+        // --- VISTA CARRITO ---
+        function showCart() {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-cart').classList.remove('hidden');
+            renderCart();
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cart-list');
+            const countSubtitle = document.getElementById('cart-subtitle');
+            let subtotal = 0;
+
+            list.innerHTML = '';
+            
+            if(cart.length === 0) {
+                list.innerHTML = '<p style="text-align:center; color:#999;">Tu carrito está vacío.</p>';
+            }
+
+            cart.forEach((item, index) => {
+                const p = products.find(prod => prod.id === item.id);
+                subtotal += p.price * item.qty;
+
+                let fallback = "https://via.placeholder.com/100";
+
+                list.innerHTML += `
+                <div class="cart-item">
+                    <img src="${p.img}" onerror="this.src='${fallback}'">
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${p.name}</div>
+                        <div class="cart-item-price">S/ ${p.price.toFixed(2)}</div>
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                            <span class="remove-btn" onclick="removeFromCart(${index})">🗑️</span>
+                        </div>
+                    </div>
+                    <div style="font-weight:bold;">S/ ${(p.price * item.qty).toFixed(2)}</div>
+                </div>`;
+            });
+
+            countSubtitle.innerText = `${cart.reduce((a,b)=>a+b.qty,0)} productos`;
+            document.getElementById('cart-subtotal').innerText = "S/ " + subtotal.toFixed(2);
+            document.getElementById('cart-total').innerText = "S/ " + subtotal.toFixed(2);
+        }
+
+        function updateQty(index, change) {
+            cart[index].qty += change;
+            if(cart[index].qty <= 0) cart.splice(index, 1);
+            renderCart();
+            updateCartCount();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+            updateCartCount();
+        }
+    </script>
+</body>
+</html>
